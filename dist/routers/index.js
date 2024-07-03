@@ -7,6 +7,9 @@ const express_1 = require("express");
 const auth_router_1 = __importDefault(require("./auth.router"));
 const post_router_1 = __importDefault(require("./post.router"));
 const router = (0, express_1.Router)();
-router.use("/auth", auth_router_1.default);
+router.use("/auth", (req, res, next) => {
+    console.log("middleware router utama ");
+    next();
+}, auth_router_1.default);
 router.use("/post", post_router_1.default);
 exports.default = router;

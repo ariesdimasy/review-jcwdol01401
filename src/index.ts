@@ -1,6 +1,7 @@
-import express, { Application, Request, Response, urlencoded } from "express"
+import express, { Application, NextFunction, Request, Response, urlencoded } from "express"
 import cors from "cors"
 import router from "./routers"
+import { configDotenv } from "dotenv"
 
 const app: Application = express()
 const port: Number = 5670
@@ -15,7 +16,15 @@ app.get("/", (req: Request, res: Response) => {
     })
 })
 
-app.use(router)
+app.use((req: Request, res: Response, next: NextFunction) => {
+    console.log("ini paling duluan ?")
+    next()
+})
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+    console.log("ini udah middleware paling luar")
+    next()
+}, router)
 
 app.listen(port, () => {
     console.log("Application running on PORT = ", port)

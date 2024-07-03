@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.register = exports.getAllUsers = void 0;
 const client_1 = require("@prisma/client");
+const bcrypt_1 = require("bcrypt");
+const jsonwebtoken_1 = require("jsonwebtoken");
 const prisma = new client_1.PrismaClient();
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -31,21 +33,36 @@ exports.getAllUsers = getAllUsers;
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, email, password } = req.body;
+        const existingUser = yield prisma.user.findFirst({
+            where: {
+                email: email
+            }
+        });
+        if (existingUser) {
+            //throw new Error("email has been used")
+            return res.status(500).send({
+                message: "failed",
+                data: "email has been used"
+            });
+        }
+        const salt = yield (0, bcrypt_1.genSalt)(10);
+        const hashedPassword = yield (0, bcrypt_1.hash)(password, salt);
         const user = yield prisma.user.create({
             data: {
                 name: name,
                 email: email,
-                password: password
+                password: hashedPassword,
             }
         });
-        res.status(201).send({
+        return res.status(201).send({
             message: "success",
             data: user
         });
     }
     catch (err) {
-        res.status(500).send({
-            data: JSON.stringify(err)
+        return res.status(500).send({
+            message: "failed",
+            data: err
         });
     }
 });
@@ -53,23 +70,31 @@ exports.register = register;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
-        const login = yield prisma.user.findFirst({
+        const user = yield prisma.user.findFirst({
             where: {
-                email,
-                password
+                email
             }
         });
-        if (login) {
-            return res.status(201).send({
-                message: "success",
-                data: login
+        if (!user) {
+            return res.status(400).send({
+                message: "failed",
+                data: "invalid email or password"
             });
         }
-        else {
-            return res.status(404).send({
-                message: "user not found",
+        const isValidPassword = yield (0, bcrypt_1.compare)(password, user.password);
+        if (!isValidPassword) {
+            return res.status(400).send({
+                message: "failed",
+                data: "invalid email or password"
             });
         }
+        const jwtPayload = { name: user.name, email: email, role: user === null || user === void 0 ? void 0 : user.role };
+        const token = yield (0, jsonwebtoken_1.sign)(jwtPayload, "mySecretAcademia", { expiresIn: '1h' });
+        return res.status(200).send({
+            message: "success",
+            data: user,
+            token: token
+        });
     }
     catch (err) {
         res.status(500).send({

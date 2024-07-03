@@ -39,7 +39,14 @@ app.get("/", (req, res) => {
         hello: 'world'
     });
 });
-app.use(routers_1.default);
+app.use((req, res, next) => {
+    console.log("ini paling duluan ?");
+    next();
+});
+app.use((req, res, next) => {
+    console.log("ini udah middleware paling luar");
+    next();
+}, routers_1.default);
 app.listen(port, () => {
     console.log("Application running on PORT = ", port);
 });
