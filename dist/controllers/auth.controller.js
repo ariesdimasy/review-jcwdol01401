@@ -83,13 +83,43 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const isValidPassword = yield (0, bcrypt_1.compare)(password, user.password);
         if (!isValidPassword) {
+            //
+            if (user.attempt === 2) {
+                const doSuspend = yield prisma.user.update({
+                    data: {
+                        attempt: user.attempt + 1,
+                        suspend: true,
+                    },
+                    where: {
+                        id: user.id
+                    }
+                });
+                return res.status(400).send({
+                    message: "failed",
+                    data: "Your account are suspended"
+                });
+            }
+            const doAttempt = yield prisma.user.update({
+                data: {
+                    attempt: user.attempt + 1
+                },
+                where: {
+                    id: user.id
+                }
+            });
             return res.status(400).send({
                 message: "failed",
                 data: "invalid email or password"
             });
         }
-        const jwtPayload = { name: user.name, email: email, role: user === null || user === void 0 ? void 0 : user.role };
-        const token = yield (0, jsonwebtoken_1.sign)(jwtPayload, "mySecretAcademia", { expiresIn: '1h' });
+        if (user.suspend == 1) {
+            return res.status(400).send({
+                message: "failed",
+                data: "your account already suspended"
+            });
+        }
+        const jwtPayload = { id: user.id, name: user.name, email: email, role: user === null || user === void 0 ? void 0 : user.role };
+        const token = yield (0, jsonwebtoken_1.sign)(jwtPayload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
         return res.status(200).send({
             message: "success",
             data: user,

@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const routers_1 = __importDefault(require("./routers"));
+require("dotenv/config");
 const app = (0, express_1.default)();
 const port = 5670;
 app.use((0, cors_1.default)());
@@ -36,7 +37,8 @@ app.use(express_1.default.json());
 app.use((0, express_1.urlencoded)({ extended: true }));
 app.get("/", (req, res) => {
     res.send({
-        hello: 'world'
+        hello: 'world',
+        env: JSON.stringify(process.env.JWT_SECRET_KEY)
     });
 });
 app.use((req, res, next) => {

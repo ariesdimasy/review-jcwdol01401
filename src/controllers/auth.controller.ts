@@ -89,14 +89,49 @@ export const login = async (req: Request, res: Response) => {
         const isValidPassword = await compare(password, user.password)
 
         if (!isValidPassword) {
+
+            //
+            if (user.attempt === 2) {
+                const doSuspend = await prisma.user.update({
+                    data: {
+                        attempt: user.attempt + 1,
+                        suspend: true,
+                    },
+                    where: {
+                        id: user.id
+                    }
+                })
+
+                return res.status(400).send({
+                    message: "failed",
+                    data: "Your account are suspended"
+                })
+            }
+
+            const doAttempt = await prisma.user.update({
+                data: {
+                    attempt: user.attempt + 1
+                },
+                where: {
+                    id: user.id
+                }
+            })
+
             return res.status(400).send({
                 message: "failed",
                 data: "invalid email or password"
             })
         }
 
-        const jwtPayload = { name: user.name, email: email, role: user?.role }
-        const token = await sign(jwtPayload, "mySecretAcademia", { expiresIn: '1h' })
+        if (user.suspend == 1) {
+            return res.status(400).send({
+                message: "failed",
+                data: "your account already suspended"
+            })
+        }
+
+        const jwtPayload = { id: user.id, name: user.name, email: email, role: user?.role }
+        const token = await sign(jwtPayload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' })
 
         return res.status(200).send({
             message: "success",

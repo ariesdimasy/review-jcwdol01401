@@ -8,6 +8,8 @@ export const createPost = async (req: Request, res: Response) => {
 
         const { title, body, user_id } = req.body
 
+        console.log(" body => ", req.body)
+
         const post = await prisma.post.create({
             data: {
                 title: title,

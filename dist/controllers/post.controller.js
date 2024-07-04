@@ -15,6 +15,7 @@ const prisma = new client_1.PrismaClient();
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { title, body, user_id } = req.body;
+        console.log(" body => ", req.body);
         const post = yield prisma.post.create({
             data: {
                 title: title,

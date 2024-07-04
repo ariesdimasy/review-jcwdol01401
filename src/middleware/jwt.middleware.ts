@@ -26,12 +26,12 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
             return res.status(401).send("Unauthorized")
         }
 
-        const verifyUser = verify(token, "mySecretAcademia")
+        const verifyUser = verify(token, process?.env?.JWT_SECRET_KEY)
         if (!verifyUser) {
             return res.status(401).send("Unauthorized")
         }
 
-        req?.user = verifyUser as User
+        req.user = verifyUser as User
 
         next()
     } catch (err) {
@@ -46,9 +46,9 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
 export const adminGuard = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        console.log("login sebagai => ", req?.user)
+        console.log("login sebagai => ", req.user)
 
-        if (req?.user?.role != "admin") {
+        if (req.user?.role != "admin") {
             return res.status(401).send("Unauthorized")
         }
 

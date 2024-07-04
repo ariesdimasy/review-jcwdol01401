@@ -19,6 +19,8 @@ model User {
   email     String
   password  String
   role      String   @default("user")
+  attempt   Int      @default(0)
+  suspend   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   posts     Post[]

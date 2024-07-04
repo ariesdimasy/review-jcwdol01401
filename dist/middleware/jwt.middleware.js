@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminGuard = exports.verifyToken = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     try {
         console.log("AUTHORIZATION HEADER => ", req.header("Authorization"));
         const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
@@ -20,11 +20,11 @@ const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         if (!token) {
             return res.status(401).send("Unauthorized");
         }
-        const verifyUser = (0, jsonwebtoken_1.verify)(token, "mySecretAcademia");
+        const verifyUser = (0, jsonwebtoken_1.verify)(token, (_b = process === null || process === void 0 ? void 0 : process.env) === null || _b === void 0 ? void 0 : _b.JWT_SECRET_KEY);
         if (!verifyUser) {
             return res.status(401).send("Unauthorized");
         }
-        req === null || req === void 0 ? void 0 : req.user = verifyUser;
+        req.user = verifyUser;
         next();
     }
     catch (err) {
@@ -39,8 +39,8 @@ exports.verifyToken = verifyToken;
 const adminGuard = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        console.log("login sebagai => ", req === null || req === void 0 ? void 0 : req.user);
-        if (((_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.role) != "admin") {
+        console.log("login sebagai => ", req.user);
+        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) != "admin") {
             return res.status(401).send("Unauthorized");
         }
         next();

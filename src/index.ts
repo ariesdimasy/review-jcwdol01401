@@ -1,7 +1,7 @@
 import express, { Application, NextFunction, Request, Response, urlencoded } from "express"
 import cors from "cors"
 import router from "./routers"
-import { configDotenv } from "dotenv"
+import 'dotenv/config'
 
 const app: Application = express()
 const port: Number = 5670
@@ -12,7 +12,8 @@ app.use(urlencoded({ extended: true }))
 
 app.get("/", (req: Request, res: Response) => {
     res.send({
-        hello: 'world'
+        hello: 'world',
+        env: JSON.stringify(process.env.JWT_SECRET_KEY)
     })
 })
 
