@@ -10,9 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.register = exports.getAllUsers = void 0;
+exports.me = me;
 const client_1 = require("@prisma/client");
 const bcrypt_1 = require("bcrypt");
 const jsonwebtoken_1 = require("jsonwebtoken");
+const errorHandler_1 = require("../helpers/errorHandler");
 const prisma = new client_1.PrismaClient();
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -127,9 +129,18 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (err) {
+        (0, errorHandler_1.logErrorHandler)(JSON.stringify(err));
         res.status(500).send({
             data: JSON.stringify(err)
         });
     }
 });
 exports.login = login;
+function me(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return res.status(200).send({
+            message: 'success',
+            data: req.user
+        });
+    });
+}

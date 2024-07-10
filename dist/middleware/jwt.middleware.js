@@ -31,7 +31,7 @@ const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         console.log(err);
         res.status(500).send({
             message: "error",
-            error: err.message
+            error: JSON.stringify(err)
         });
     }
 });

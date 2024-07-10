@@ -4,7 +4,7 @@ import {
 } from "@prisma/client";
 import { genSalt, hash, compare } from "bcrypt"
 import { sign } from "jsonwebtoken";
-import { configDotenv } from "dotenv";
+import { logErrorHandler } from "../helpers/errorHandler";
 
 const prisma = new PrismaClient()
 
@@ -140,8 +140,16 @@ export const login = async (req: Request, res: Response) => {
         })
 
     } catch (err) {
+        logErrorHandler(JSON.stringify(err))
         res.status(500).send({
             data: JSON.stringify(err)
         })
     }
+}
+
+export async function me(req: Request, res: Response) {
+    return res.status(200).send({
+        message: 'success',
+        data: req.user
+    })
 }

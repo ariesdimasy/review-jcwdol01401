@@ -5,6 +5,6 @@ import { adminGuard, verifyToken } from "../middleware/jwt.middleware";
 const router = Router()
 
 router.post("/", verifyToken, adminGuard, createPost)
-router.get("/", getAllPosts)
+router.get("/", verifyToken, getAllPosts)
 
 export default router

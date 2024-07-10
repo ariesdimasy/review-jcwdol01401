@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
   email     String
   password  String
-  role      String   @default("user")
-  attempt   Int      @default(0)
-  suspend   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      String    @default("user")
+  attempt   Int       @default(0)
+  suspend   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   posts     Post[]
+  Product   Product[]
 
   @@map("users")
 }
@@ -38,4 +39,30 @@ model Post {
   User      User     @relation(fields: [user_id], references: [id])
 
   @@map("posts")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String @db.Text
+  price       Int
+  stock       Int
+  image       String
+  user_id     Int
+  category_id Int
+
+  User     User     @relation(fields: [user_id], references: [id])
+  Category Category @relation(fields: [category_id], references: [id])
+
+  @@map("products")
 }

@@ -38,7 +38,7 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
         console.log(err)
         res.status(500).send({
             message: "error",
-            error: (err as Error).message
+            error: JSON.stringify(err)
         })
     }
 }
