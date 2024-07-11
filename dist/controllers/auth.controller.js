@@ -138,6 +138,10 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.login = login;
 function me(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        const user = {
+            name: "dimas",
+            email: "dimas@gmail.com"
+        };
         return res.status(200).send({
             message: 'success',
             data: req.user

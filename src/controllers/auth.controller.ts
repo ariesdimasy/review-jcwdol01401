@@ -5,6 +5,7 @@ import {
 import { genSalt, hash, compare } from "bcrypt"
 import { sign } from "jsonwebtoken";
 import { logErrorHandler } from "../helpers/errorHandler";
+import { IUserRequest } from "../interface/user";
 
 const prisma = new PrismaClient()
 
@@ -148,6 +149,12 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export async function me(req: Request, res: Response) {
+
+    const user: IUserRequest = {
+        name: "dimas",
+        email: "dimas@gmail.com"
+    }
+
     return res.status(200).send({
         message: 'success',
         data: req.user

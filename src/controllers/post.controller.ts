@@ -4,6 +4,7 @@ import { redisClient } from "../config/redis.config"
 import { logErrorHandler } from "../helpers/errorHandler"
 
 const prisma = new PrismaClient()
+redisClient.connect()
 
 export const createPost = async (req: Request, res: Response) => {
     try {
@@ -36,7 +37,6 @@ export const createPost = async (req: Request, res: Response) => {
 
 export const getAllPosts = async (req: Request, res: Response) => {
     try {
-
         const redisData = await redisClient.get("posts")
 
         if (redisData) {
@@ -59,7 +59,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
             }
         })
 
-        await redisClient.setEx("posts", 5, JSON.stringify(posts))
+        await redisClient.setEx("posts", 60, JSON.stringify(posts))
 
         return res.status(200).send({
             message: "success from prisma",

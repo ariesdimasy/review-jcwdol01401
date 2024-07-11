@@ -14,6 +14,7 @@ const client_1 = require("@prisma/client");
 const redis_config_1 = require("../config/redis.config");
 const errorHandler_1 = require("../helpers/errorHandler");
 const prisma = new client_1.PrismaClient();
+redis_config_1.redisClient.connect();
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
@@ -61,7 +62,7 @@ const getAllPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 }
             }
         });
-        yield redis_config_1.redisClient.setEx("posts", 5, JSON.stringify(posts));
+        yield redis_config_1.redisClient.setEx("posts", 60, JSON.stringify(posts));
         return res.status(200).send({
             message: "success from prisma",
             data: posts
